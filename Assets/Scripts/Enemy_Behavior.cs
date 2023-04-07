@@ -101,7 +101,6 @@ public class Enemy_Behavior : MonoBehaviour
     {
         agent.SetDestination(ActiveGomme.position);
 
-        Debug.Log(agent.remainingDistance);
 
         if(agent.remainingDistance < 2 && agent.remainingDistance > 0)
         {
@@ -123,7 +122,6 @@ public class Enemy_Behavior : MonoBehaviour
     private void OnTriggerEnter(Collider collision)
     {
         //Check for player collision
-        Debug.Log("Collision!");
         if (collision.transform == player)
         {
             //Collided with player
