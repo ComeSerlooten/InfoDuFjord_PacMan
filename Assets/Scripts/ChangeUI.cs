@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
-public class ChangeUi : MonoBehaviour
+public class ChangeUI : MonoBehaviour
 {
     [SerializeField] private List<GameObject> listFantomes;
     [SerializeField] private GameObject txtPcGommes;
@@ -12,8 +12,10 @@ public class ChangeUi : MonoBehaviour
     private int _nbFantomes;
     private int _nbPcGommes;
 
-    private void ChangeTxt()
+    private void Start()
     {
+        _nbFantomes = 2;
+        _nbPcGommes = 10;
     }
 
     private void Update()
