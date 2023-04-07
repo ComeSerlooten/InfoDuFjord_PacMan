@@ -210,7 +210,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 18824738}
         m_TargetAssemblyTypeName: ChangeScene, Assembly-CSharp
-        m_MethodName: ChangeToScene
+        m_MethodName: ChangeToAdditiveScene
         m_Mode: 5
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1012,7 +1012,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 909379383}
         m_TargetAssemblyTypeName: ChangeScene, Assembly-CSharp
-        m_MethodName: ChangeToScene
+        m_MethodName: ChangeToAdditiveScene
         m_Mode: 5
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

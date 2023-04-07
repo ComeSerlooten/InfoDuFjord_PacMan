@@ -8,6 +8,16 @@ public class ChangeScene : MonoBehaviour
         SceneManager.LoadScene(scene);
     }
 
+    public void ChangeToAdditiveScene(string scene)
+    {
+        SceneManager.LoadScene(scene,LoadSceneMode.Additive);
+    }
+
+    public void UnloadAdditiveScene(string sceneActuelle)
+    {
+        SceneManager.UnloadSceneAsync(sceneActuelle);
+    }
+
     public void QuitGame()
     {
         Application.Quit();
