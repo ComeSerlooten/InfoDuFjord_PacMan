@@ -11,7 +11,7 @@ public class Enemy_Behavior : MonoBehaviour
     public NavMeshAgent agent;
     public Transform player;
 
-    public Transform[] gommes;
+    public List<CollectibleGum> gommes = new List<CollectibleGum>();
     private Transform ActiveGomme;
 
     public LayerMask whatIsGround, whatIsPlayer;
@@ -27,38 +27,89 @@ public class Enemy_Behavior : MonoBehaviour
     public float WalkPointRange;
     public float SightRange;
     public bool PlayerinSightRange;
+
+    [SerializeField] bool isSearching = true;
+    bool activeSearch = false;
     
     void Start()
     {
-        ActiveGomme = gommes[0];
+        //Récupérer les gommes dans la scene automatiquement
+        GetGums();
+
+        ActiveGomme = gommes[0].transform;
         //initialise la gomme la plus proche
-        SelectNewGomme();
+        GetClosestGomme();
         chasetimerCur = chasetimerMax;
     }
 
     // Update is called once per frame
     void FixedUpdate()
     {
-        //si en poursuite
-        if(isChasingPlayer)
-            ChasePlayer();
-
-        //sinon, vérifier si le joueur est plus près que la gomme la plus proche
-        if (Vector3.Distance(ActiveGomme.position, transform.position) >
-            Vector3.Distance(player.position, transform.position))
+        if (isSearching && !activeSearch) StartCoroutine(SearchDelay());
+        else if (!isSearching && activeSearch)
         {
-            //timer pour que cette vérification ne soit fait qu'une fois par seconde
-            chasetimerCur = chasetimerMax;
-            isChasingPlayer = true;
+            StopCoroutine(SearchDelay());
+            activeSearch = false;
+        }
+
+        //si en poursuite
+        
+    }
+
+    IEnumerator SearchDelay()
+    {
+        activeSearch = true;
+        while(isSearching)
+        {
+            yield return new WaitForSeconds(.5f);
+            Search();
+        }
+    }
+
+    void Search()
+    {
+        GetClosestGomme();
+        if (gommes.Count > 0)
+        {
+            if (Vector3.Distance(ActiveGomme.position, transform.position) >
+            Vector3.Distance(player.position, transform.position))
+            {
+                isChasingPlayer = true;
+                ChasePlayer();
+            }
+            else
+            {
+                ChaseGum();
+            }
+        }
+        else
+        {
             ChasePlayer();
         }
-        
-        else ChaseGum();
+
+    }
+
+    void GetGums()
+    {
+        foreach ( CollectibleGum cg in FindObjectsOfType(typeof(CollectibleGum)))
+        {
+            gommes.Add(cg);
+        }
     }
 
     void ChaseGum()
     {
         agent.SetDestination(ActiveGomme.position);
+
+        Debug.Log(agent.remainingDistance);
+
+        if(agent.remainingDistance < 2 && agent.remainingDistance > 0)
+        {
+           ActiveGomme.GetComponent<CollectibleGum>().Collected();
+            gommes.Remove(ActiveGomme.GetComponent<CollectibleGum>());
+           GetClosestGomme();
+        }
+        
     }
     
     private void ChasePlayer()
@@ -66,28 +117,28 @@ public class Enemy_Behavior : MonoBehaviour
         //poursuit le joueur. Si le timer se termine, on arrête de le suivre par défaut et on peut vérifier dans update
         //qui est le plus proche
         agent.SetDestination(player.position);
-        chasetimerCur--;
-        if (chasetimerCur <= 0)
+        
+    }
+
+    private void OnTriggerEnter(Collider collision)
+    {
+        //Check for player collision
+        Debug.Log("Collision!");
+        if (collision.transform == player)
         {
-            isChasingPlayer = false;
-            SelectNewGomme();
+            //Collided with player
+
         }
     }
 
-    private void OnCollisionEnter(Collision collision)
+    private void GetClosestGomme()
     {
-        //quand tu collisionne avec une gomme, en choisit une nouvelle
-        SelectNewGomme();
-    }
-
-    private void SelectNewGomme()
-    {
-        foreach (Transform gomme in gommes)
+        foreach (CollectibleGum gomme in gommes)
         {
-            float distance = Vector3.Distance(gomme.position, transform.position);
+            float distance = Vector3.Distance(gomme.transform.position, transform.position);
             if (distance < Vector3.Distance(ActiveGomme.position, transform.position))
             {
-                ActiveGomme = gomme;
+                ActiveGomme = gomme.transform;
             }
         }
     }
